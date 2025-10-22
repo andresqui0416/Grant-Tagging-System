@@ -177,16 +177,31 @@ def health_check():
         'version': '1.0.0'
     })
 
+
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    return jsonify({
+        'success': True,
+        'message': 'Grant Tagging API is running',
+        'version': '1.0.0'
+    })
+
 if __name__ == '__main__':
     # Create data directory if it doesn't exist
     os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)
     
-    print("Starting Grant Tagging API...")
-    print("Available endpoints:")
-    print("  GET  /api/grants - Get all grants")
-    print("  POST /api/grants - Add new grants")
-    print("  GET  /api/tags - Get available tags")
-    print("  POST /api/grants/search - Search grants by tags")
-    print("  GET  /api/health - Health check")
-    
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    environment = os.getenv('ENVIRONMENT')
+    if environment == 'development':
+        print("Starting Grant Tagging API...")
+        print("Available endpoints:")
+        print("  GET  /api/grants - Get all grants")
+        print("  POST /api/grants - Add new grants")
+        print("  GET  /api/tags - Get available tags")
+        print("  POST /api/grants/search - Search grants by tags")
+        print("  GET  /api/health - Health check")
+        app.run(debug=True, host='0.0.0.0', port=5000)
+    elif environment == 'vercel_production':
+        print("Starting Grant Tagging API in vercel production mode...")
+    else:
+        print("Starting Grant Tagging API in development mode...")
+        app.run(debug=True, host='0.0.0.0', port=5000)
