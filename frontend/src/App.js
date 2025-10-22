@@ -4,6 +4,11 @@ import GrantEntry from './components/GrantEntry';
 import GrantDisplay from './components/GrantDisplay';
 import './App.css';
 
+// API base URL - use Vercel backend for production
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://grant-tagging-system-backend.vercel.app'
+  : '';
+
 function App() {
   const [activeTab, setActiveTab] = useState('entry');
   const [grants, setGrants] = useState([]);
@@ -20,7 +25,7 @@ function App() {
   const loadGrants = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/grants');
+      const response = await axios.get(`${API_BASE_URL}/api/grants`);
       if (response.data.success) {
         setGrants(response.data.grants);
       } else {
@@ -35,7 +40,7 @@ function App() {
 
   const loadTags = async () => {
     try {
-      const response = await axios.get('/api/tags');
+      const response = await axios.get(`${API_BASE_URL}/api/tags`);
       if (response.data.success) {
         setTags(response.data.tags);
       }
@@ -51,7 +56,7 @@ function App() {
   const handleGrantSearch = async (searchTags) => {
     try {
       setLoading(true);
-      const response = await axios.post('/api/grants/search', { tags: searchTags });
+      const response = await axios.post(`${API_BASE_URL}/api/grants/search`, { tags: searchTags });
       if (response.data.success) {
         setGrants(response.data.grants);
       } else {

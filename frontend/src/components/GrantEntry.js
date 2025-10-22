@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+// API base URL - use Vercel backend for production
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://grant-tagging-system-backend.vercel.app'
+  : '';
+
 const GrantEntry = ({ onGrantsAdded, availableTags }) => {
   const [formData, setFormData] = useState({
     grant_name: '',
@@ -52,7 +57,7 @@ const GrantEntry = ({ onGrantsAdded, availableTags }) => {
       }
 
       // Submit to backend
-      const response = await axios.post('/api/grants', grantsToSubmit);
+      const response = await axios.post(`${API_BASE_URL}/api/grants`, grantsToSubmit);
       
       if (response.data.success) {
         setMessage(`Successfully added ${response.data.grants_added.length} grant(s) with automatic tagging!`);
