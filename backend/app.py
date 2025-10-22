@@ -177,15 +177,6 @@ def health_check():
         'version': '1.0.0'
     })
 
-
-@app.route('/api/health', methods=['GET'])
-def health_check():
-    return jsonify({
-        'success': True,
-        'message': 'Grant Tagging API is running',
-        'version': '1.0.0'
-    })
-
 if __name__ == '__main__':
     # Create data directory if it doesn't exist
     os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)
