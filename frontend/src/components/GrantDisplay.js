@@ -190,50 +190,6 @@ const GrantDisplay = ({ grants, availableTags, onSearch, onClearSearch, loading 
                 <div className="mb-4">
                   <p className="text-gray-600 leading-relaxed">{grant.grant_description}</p>
                 </div>
-
-                {(grant.website_urls || grant.document_urls) && (
-                  <div className="border-t border-gray-200 pt-4">
-                    {grant.website_urls && grant.website_urls.length > 0 && (
-                      <div className="mb-3">
-                        <strong className="block text-sm font-medium text-gray-900 mb-2">Websites:</strong>
-                        <ul className="space-y-1">
-                          {grant.website_urls.map((url, idx) => (
-                            <li key={idx}>
-                              <a 
-                                href={url} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="text-primary-600 hover:text-primary-800 text-sm break-all"
-                              >
-                                {url}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    
-                    {grant.document_urls && grant.document_urls.length > 0 && (
-                      <div>
-                        <strong className="block text-sm font-medium text-gray-900 mb-2">Documents:</strong>
-                        <ul className="space-y-1">
-                          {grant.document_urls.map((url, idx) => (
-                            <li key={idx}>
-                              <a 
-                                href={url} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="text-primary-600 hover:text-primary-800 text-sm break-all"
-                              >
-                                {url}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                )}
               </div>
             ))
           )}

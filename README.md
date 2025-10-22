@@ -1,6 +1,6 @@
 # Grant Tagging System
 
-A React frontend and Python Flask backend system for categorizing and displaying grants with intelligent tagging.
+A React frontend and Python Flask backend system for categorizing and displaying grants with intelligent tagging and MySQL database integration.
 
 ## 🚀 Features
 
@@ -10,6 +10,9 @@ A React frontend and Python Flask backend system for categorizing and displaying
 - **Advanced Filtering**: Filter grants by tags, search by text, and sort results
 - **Real-time Updates**: Immediate display of newly added grants
 - **Responsive Design**: Works on desktop and mobile devices
+- **MySQL Database**: Robust data persistence with SQLAlchemy ORM
+- **Proxy Support**: Database connections through SOCKS proxy
+- **Production Ready**: Deployed on Vercel with cloud database
 
 ## 🏗️ Project Structure
 
@@ -17,26 +20,31 @@ A React frontend and Python Flask backend system for categorizing and displaying
 grant-tagging-system/
 ├── backend/
 │   ├── app.py                    # Flask application with REST API
-│   ├── tagging_service.py        # Intelligent tagging logic
+│   ├── database.py              # Database configuration and proxy setup
+│   ├── models.py                # SQLAlchemy database models
+│   ├── database_service.py     # Database operations service
+│   ├── tagging_service.py       # Intelligent tagging logic
+│   ├── setup_database.py       # Database setup and reset functionality
+│   ├── seed_from_json.py       # Database seeding from JSON data
 │   ├── data/
-│   │   └── grants.json           # JSON-based grant storage
-│   ├── requirements.txt           # Python dependencies
-│   └── env_example.txt           # Environment variables template
+│   │   └── grants.json          # Sample grant data
+│   ├── requirements.txt         # Python dependencies
+│   ├── env_example.txt         # Environment variables template
+│   └── vercel.json             # Vercel deployment configuration
 ├── frontend/
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── GrantEntry.js     # Grant input component
-│   │   │   └── GrantDisplay.js   # Grant display component
-│   │   ├── App.js               # Main React application
-│   │   ├── App.css              # Tailwind CSS imports
-│   │   └── index.js             # React entry point
+│   │   │   ├── GrantEntry.js    # Grant input component
+│   │   │   └── GrantDisplay.js  # Grant display component
+│   │   ├── App.js              # Main React application
+│   │   ├── App.css             # Tailwind CSS imports
+│   │   └── index.js            # React entry point
 │   ├── public/
-│   │   └── index.html           # HTML template
-│   ├── tailwind.config.js       # Tailwind configuration
-│   ├── postcss.config.js        # PostCSS configuration
-│   └── package.json            # Node.js dependencies
-├── test_grants.json            # Sample grant data for testing
-└── README.md                   # This documentation
+│   │   └── index.html          # HTML template
+│   ├── tailwind.config.js     # Tailwind configuration
+│   ├── postcss.config.js      # PostCSS configuration
+│   └── package.json           # Node.js dependencies
+└── README.md                  # This documentation
 ```
 
 ## 🛠️ Setup Instructions
@@ -44,55 +52,155 @@ grant-tagging-system/
 ### Prerequisites
 - Python 3.8+ with pip
 - Node.js 16+ with npm
+- MySQL database (local or cloud)
 - (Optional) OpenAI API key for enhanced tagging
+- (Optional) SOCKS proxy for database connections
 
 ### Backend Setup
-1. Navigate to backend directory:
+
+1. **Navigate to backend directory:**
    ```bash
    cd backend
    ```
 
-2. Create and activate virtual environment:
+2. **Create and activate virtual environment:**
    ```bash
    python3 -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
-3. Install Python dependencies:
+3. **Install Python dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
 
-4. (Optional) Set up OpenAI API key for enhanced tagging:
+4. **Configure environment variables:**
    ```bash
+   # Option 1: Use the setup script
+   python setup_env.py
+   
+   # Option 2: Manual setup
    cp env_example.txt .env
-   # Edit .env and add your OpenAI API key
+   # Edit .env with your database credentials and proxy settings
    ```
 
-5. Start the Flask server:
+5. **Set up the database:**
+   ```bash
+   # Create database and tables
+   python setup_database.py
+   
+   # Or reset existing database
+   python setup_database.py --reset
+   ```
+
+6. **Seed with sample data:**
+   ```bash
+   python seed_from_json.py
+   ```
+
+7. **Start the Flask server:**
    ```bash
    python app.py
    ```
    The API will be available at `http://localhost:5000`
 
 ### Frontend Setup
-1. Navigate to frontend directory:
+
+1. **Navigate to frontend directory:**
    ```bash
    cd frontend
    ```
 
-2. Install Node.js dependencies:
+2. **Install Node.js dependencies:**
    ```bash
    npm install
    ```
-   
-   Note: The project includes Tailwind CSS v3.4+ with standard PostCSS integration.
 
-3. Start the React development server:
+3. **Start the React development server:**
    ```bash
    npm start
    ```
    The application will open at `http://localhost:3000`
+
+## 🗄️ Database Configuration
+
+### Environment Variables (.env)
+
+```bash
+# Database Configuration
+DB_HOST=your_database_host
+DB_PORT=3306
+DB_USER=your_database_username
+DB_PASSWORD=your_database_password
+DB_NAME=grant_tagging_db
+
+# Proxy Configuration (set USE_PROXY=TRUE to enable)
+USE_PROXY=FALSE
+DB_PROXY_HOST=your_proxy_host
+DB_PROXY_PORT=your_proxy_port
+DB_PROXY_USER=your_proxy_username
+DB_PROXY_PASSWORD=your_proxy_password
+
+# OpenAI API Key (optional)
+OPENAI_API_KEY=your_openai_api_key
+
+# Environment
+ENVIRONMENT=development
+```
+
+### Database Management
+
+**Reset Database:**
+```bash
+python setup_database.py --reset
+```
+
+**Seed with JSON Data:**
+```bash
+python seed_from_json.py
+```
+
+**Check Database Status:**
+```bash
+python -c "
+from database import create_database_engine, DB_CONFIG
+from models import Grant, Tag
+from sqlalchemy.orm import sessionmaker
+engine = create_database_engine()
+Session = sessionmaker(bind=engine)
+session = Session()
+print(f'Grants: {session.query(Grant).count()}')
+print(f'Tags: {session.query(Tag).count()}')
+session.close()
+"
+```
+
+### Proxy Configuration
+
+**Direct Connection (No Proxy):**
+```bash
+# In your .env file
+USE_PROXY=FALSE
+DB_HOST=your_database_host
+DB_USER=your_username
+DB_PASSWORD=your_password
+```
+
+**With SOCKS Proxy:**
+```bash
+# In your .env file
+USE_PROXY=TRUE
+DB_PROXY_HOST=82.24.221.151
+DB_PROXY_PORT=6002
+DB_PROXY_USER=cjbgcxgd
+DB_PROXY_PASSWORD=eeqlsxi9m3u5
+```
+
+**Setup Environment File:**
+```bash
+# Create .env file with examples
+python setup_env.py
+```
 
 ## 📡 API Endpoints
 
@@ -135,33 +243,9 @@ The system uses a sophisticated hybrid approach for accurate tag assignment:
 - Handles complex relationships and implicit themes
 
 ### 3. Precision Filtering
-- Only assigns tags from the predefined list (89 available tags)
+- Only assigns tags from the predefined list
 - Prevents hallucinated or invalid tags
 - Ensures consistency across the system
-
-### Tag Categories
-The system includes 89 predefined tags covering:
-- **Agriculture**: agriculture, farming, soil, water, conservation
-- **Education**: education, training, outreach, youth
-- **Infrastructure**: infrastructure, equipment, capital, facilities
-- **Program Types**: pilot, competitive, cost-share, reimbursement
-- **Target Audiences**: farmer, youth, veteran, tribal, underserved
-- **Geographic**: state-specific tags (wi, va, ri, nh, mn, me, ky, co)
-- **Specialized**: equine, seafood, dairy, organic, disaster-relief
-
-## 🎯 Tagging Performance
-
-Based on testing with the provided grant data:
-
-- **Precision**: High accuracy in tag assignment
-- **Recall**: Captures most relevant tags for each grant
-- **Coverage**: Successfully tags all major themes and concepts
-- **Consistency**: Maintains consistent tagging across similar grants
-
-### Example Tagging Results
-- **Nutrient Management Grant**: `["soil", "education", "agriculture", "nutrient-management", "farmer", "planning"]`
-- **Farm to School Program**: `["farm-to-school", "pilot", "procurement", "local-food", "school"]`
-- **Drought Relief Fund**: `["water", "disaster-relief", "drought", "irrigation", "farmer"]`
 
 ## 🚀 Usage Guide
 
@@ -183,11 +267,51 @@ Based on testing with the provided grant data:
 - **Responsive Design**: Works on all screen sizes
 - **Error Handling**: Graceful error messages and validation
 
+## 🚀 Deployment
+
+### Vercel Deployment
+
+**Backend Deployment:**
+1. Connect your GitHub repository to Vercel
+2. Set environment variables in Vercel dashboard
+3. Deploy automatically on push to main branch
+
+**Frontend Deployment:**
+1. Build the React app: `npm run build`
+2. Deploy to Vercel or any static hosting service
+3. Update API URLs for production
+
+### Environment Variables for Production
+
+```bash
+# Database Configuration
+DB_HOST=your_production_database_host
+DB_PORT=3306
+DB_USER=your_production_username
+DB_PASSWORD=your_production_password
+DB_NAME=grant_tagging_db
+
+# Proxy Configuration (set USE_PROXY=TRUE to enable)
+USE_PROXY=FALSE
+DB_PROXY_HOST=your_proxy_host
+DB_PROXY_PORT=your_proxy_port
+DB_PROXY_USER=your_proxy_username
+DB_PROXY_PASSWORD=your_proxy_password
+
+# OpenAI API Key
+OPENAI_API_KEY=your_openai_api_key
+
+# Environment
+ENVIRONMENT=production
+```
+
 ## 🔧 Technical Implementation
 
 ### Backend Architecture
 - **Flask**: Lightweight web framework for API
-- **JSON Storage**: Simple file-based data persistence
+- **SQLAlchemy**: Python ORM for database operations
+- **MySQL**: Robust relational database
+- **PySocks**: SOCKS proxy support for database connections
 - **CORS Support**: Cross-origin requests for frontend
 - **Error Handling**: Comprehensive error responses
 
@@ -197,56 +321,68 @@ Based on testing with the provided grant data:
 - **Tailwind CSS**: Utility-first CSS framework for responsive design
 - **Component-based**: Modular, reusable components
 
+### Database Schema
+- **Grants Table**: `id`, `grant_name`, `grant_description`, `created_at`, `updated_at`
+- **Tags Table**: `id`, `name`, `description`, `created_at`
+- **Grant-Tags Association**: Many-to-many relationship table
+
 ### Data Flow
 1. User enters grant data (manual or JSON)
 2. Frontend sends data to backend API
 3. Backend processes grants through tagging service
 4. Tags are assigned using hybrid algorithm
-5. Grants are stored in JSON file
+5. Grants are stored in MySQL database
 6. Frontend receives tagged grants and updates display
 
 ## 🧪 Testing
 
-The system has been tested with the provided grant dataset:
-- **8 grants** successfully processed
-- **Accurate tagging** for all major themes
-- **Proper handling** of optional fields (URLs, documents)
+The system has been tested with:
+- **MySQL database integration** with proxy support
+- **JSON data seeding** from existing grant files
 - **Responsive filtering** and search functionality
+- **Production deployment** on Vercel
+- **Cross-origin requests** between frontend and backend
 
 ## 🚀 Future Enhancements
 
-### Extension Options (if time permits)
+### Extension Options
 1. **Enhanced Tagging**: Extract content from document/website URLs
 2. **Smart Search**: Handle synonyms and related terms
 3. **Dynamic Tags**: Automatically create new tags for emerging concepts
 4. **Analytics**: Tag usage statistics and trends
 5. **Export**: Download grants as CSV/JSON
 6. **User Management**: Multi-user support with permissions
+7. **Caching**: Redis for improved performance
+8. **API Rate Limiting**: Protect against abuse
 
 ## 📝 Development Notes
 
 ### Design Decisions
 - **Hybrid Tagging**: Combines rule-based and AI approaches for accuracy
-- **JSON Storage**: Simple, portable data format
+- **MySQL Database**: Robust, scalable data persistence
+- **Optional Proxy Support**: Flexible database connection with USE_PROXY flag
 - **React Hooks**: Modern, functional component architecture
 - **Tailwind CSS**: Utility-first styling for consistent, responsive design
-- **Responsive Design**: Mobile-first approach with Tailwind's responsive utilities
-- **Error Handling**: User-friendly error messages
+- **Production Ready**: Vercel deployment with cloud database
+- **Environment Control**: USE_PROXY flag for easy proxy management
 
 ### Performance Considerations
 - **Efficient Filtering**: Client-side filtering for fast response
-- **Lazy Loading**: Components load as needed
-- **Optimized Queries**: Minimal API calls
+- **Database Indexing**: Optimized queries for large datasets
+- **Connection Pooling**: Efficient database connections
 - **Caching**: Browser caching for static assets
+- **Proxy Optimization**: SOCKS proxy for secure connections
 
 ## 🤝 Contributing
 
 This project was built as a technical assessment demonstrating:
 - Full-stack development skills
+- Database design and ORM usage
 - API design and implementation
 - Frontend architecture and UX
 - Intelligent data processing
-- Problem-solving and creativity
+- Production deployment
+- Proxy and security configurations
 
 ## 📄 License
 
