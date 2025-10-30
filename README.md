@@ -343,6 +343,6 @@ This project was built as a technical assessment demonstrating:
 - Intelligent data processing
 - Production deployment
 
-## 📄 License
+## License
 
 This project is part of a technical assessment for Lasso.
