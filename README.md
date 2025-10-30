@@ -2,7 +2,7 @@
 
 A React frontend and Python Flask backend system for categorizing and displaying grants with intelligent tagging and MySQL database integration.
 
-## 🚀 Features
+## Features
 
 - **Grant Entry**: Add new grants with name and description (manual or JSON bulk upload)
 - **Intelligent Tagging**: Automatically assign relevant tags from predefined list using hybrid approach
@@ -11,16 +11,15 @@ A React frontend and Python Flask backend system for categorizing and displaying
 - **Real-time Updates**: Immediate display of newly added grants
 - **Responsive Design**: Works on desktop and mobile devices
 - **MySQL Database**: Robust data persistence with SQLAlchemy ORM
-- **Proxy Support**: Database connections through SOCKS proxy
 - **Production Ready**: Deployed on Vercel with cloud database
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 grant-tagging-system/
 ├── backend/
 │   ├── app.py                    # Flask application with REST API
-│   ├── database.py              # Database configuration and proxy setup
+│   ├── database.py              # Database configuration
 │   ├── models.py                # SQLAlchemy database models
 │   ├── database_service.py     # Database operations service
 │   ├── tagging_service.py       # Intelligent tagging logic
@@ -47,14 +46,13 @@ grant-tagging-system/
 └── README.md                  # This documentation
 ```
 
-## 🛠️ Setup Instructions
+## Setup Instructions
 
 ### Prerequisites
 - Python 3.8+ with pip
 - Node.js 16+ with npm
 - MySQL database (local or cloud)
 - (Optional) OpenAI API key for enhanced tagging
-- (Optional) SOCKS proxy for database connections
 
 ### Backend Setup
 
@@ -81,7 +79,7 @@ grant-tagging-system/
    
    # Option 2: Manual setup
    cp env_example.txt .env
-   # Edit .env with your database credentials and proxy settings
+   # Edit .env with your database credentials
    ```
 
 5. **Set up the database:**
@@ -122,7 +120,7 @@ grant-tagging-system/
    ```
    The application will open at `http://localhost:3000`
 
-## 🗄️ Database Configuration
+## Database Configuration
 
 ### Environment Variables (.env)
 
@@ -133,13 +131,6 @@ DB_PORT=3306
 DB_USER=your_database_username
 DB_PASSWORD=your_database_password
 DB_NAME=grant_tagging_db
-
-# Proxy Configuration (set USE_PROXY=TRUE to enable)
-USE_PROXY=FALSE
-DB_PROXY_HOST=your_proxy_host
-DB_PROXY_PORT=your_proxy_port
-DB_PROXY_USER=your_proxy_username
-DB_PROXY_PASSWORD=your_proxy_password
 
 # OpenAI API Key (optional)
 OPENAI_API_KEY=your_openai_api_key
@@ -175,27 +166,6 @@ session.close()
 "
 ```
 
-### Proxy Configuration
-
-**Direct Connection (No Proxy):**
-```bash
-# In your .env file
-USE_PROXY=FALSE
-DB_HOST=your_database_host
-DB_USER=your_username
-DB_PASSWORD=your_password
-```
-
-**With SOCKS Proxy:**
-```bash
-# In your .env file
-USE_PROXY=TRUE
-DB_PROXY_HOST=82.24.221.151
-DB_PROXY_PORT=6002
-DB_PROXY_USER=cjbgcxgd
-DB_PROXY_PASSWORD=eeqlsxi9m3u5
-```
-
 **Setup Environment File:**
 ```bash
 # Create .env file with examples
@@ -228,7 +198,7 @@ curl -X POST http://localhost:5000/api/grants \
   -d '[{"grant_name": "Grant 1", "grant_description": "..."}, {"grant_name": "Grant 2", "grant_description": "..."}]'
 ```
 
-## 🧠 Tagging Algorithm
+## Tagging Algorithm
 
 The system uses a sophisticated hybrid approach for accurate tag assignment:
 
@@ -247,7 +217,7 @@ The system uses a sophisticated hybrid approach for accurate tag assignment:
 - Prevents hallucinated or invalid tags
 - Ensures consistency across the system
 
-## 🚀 Usage Guide
+## Usage Guide
 
 ### Adding Grants
 1. **Manual Entry**: Use the form to enter grant name and description
@@ -267,7 +237,7 @@ The system uses a sophisticated hybrid approach for accurate tag assignment:
 - **Responsive Design**: Works on all screen sizes
 - **Error Handling**: Graceful error messages and validation
 
-## 🚀 Deployment
+## Deployment
 
 ### Vercel Deployment
 
@@ -291,12 +261,6 @@ DB_USER=your_production_username
 DB_PASSWORD=your_production_password
 DB_NAME=grant_tagging_db
 
-# Proxy Configuration (set USE_PROXY=TRUE to enable)
-USE_PROXY=FALSE
-DB_PROXY_HOST=your_proxy_host
-DB_PROXY_PORT=your_proxy_port
-DB_PROXY_USER=your_proxy_username
-DB_PROXY_PASSWORD=your_proxy_password
 
 # OpenAI API Key
 OPENAI_API_KEY=your_openai_api_key
@@ -305,13 +269,12 @@ OPENAI_API_KEY=your_openai_api_key
 ENVIRONMENT=production
 ```
 
-## 🔧 Technical Implementation
+## Technical Implementation
 
 ### Backend Architecture
 - **Flask**: Lightweight web framework for API
 - **SQLAlchemy**: Python ORM for database operations
 - **MySQL**: Robust relational database
-- **PySocks**: SOCKS proxy support for database connections
 - **CORS Support**: Cross-origin requests for frontend
 - **Error Handling**: Comprehensive error responses
 
@@ -334,16 +297,16 @@ ENVIRONMENT=production
 5. Grants are stored in MySQL database
 6. Frontend receives tagged grants and updates display
 
-## 🧪 Testing
+## Testing
 
 The system has been tested with:
-- **MySQL database integration** with proxy support
+- **MySQL database integration**
 - **JSON data seeding** from existing grant files
 - **Responsive filtering** and search functionality
 - **Production deployment** on Vercel
 - **Cross-origin requests** between frontend and backend
 
-## 🚀 Future Enhancements
+## Future Enhancements
 
 ### Extension Options
 1. **Enhanced Tagging**: Extract content from document/website URLs
@@ -355,25 +318,22 @@ The system has been tested with:
 7. **Caching**: Redis for improved performance
 8. **API Rate Limiting**: Protect against abuse
 
-## 📝 Development Notes
+## Development Notes
 
 ### Design Decisions
 - **Hybrid Tagging**: Combines rule-based and AI approaches for accuracy
 - **MySQL Database**: Robust, scalable data persistence
-- **Optional Proxy Support**: Flexible database connection with USE_PROXY flag
 - **React Hooks**: Modern, functional component architecture
 - **Tailwind CSS**: Utility-first styling for consistent, responsive design
 - **Production Ready**: Vercel deployment with cloud database
-- **Environment Control**: USE_PROXY flag for easy proxy management
 
 ### Performance Considerations
 - **Efficient Filtering**: Client-side filtering for fast response
 - **Database Indexing**: Optimized queries for large datasets
 - **Connection Pooling**: Efficient database connections
 - **Caching**: Browser caching for static assets
-- **Proxy Optimization**: SOCKS proxy for secure connections
 
-## 🤝 Contributing
+## Contributing
 
 This project was built as a technical assessment demonstrating:
 - Full-stack development skills
@@ -382,7 +342,6 @@ This project was built as a technical assessment demonstrating:
 - Frontend architecture and UX
 - Intelligent data processing
 - Production deployment
-- Proxy and security configurations
 
 ## 📄 License
 
